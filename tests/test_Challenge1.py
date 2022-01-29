@@ -10,8 +10,8 @@ class TestChallenge1(unittest.TestCase):
 
         ch = Challenge1(hxb)
 
-        self.assertEqual( ch.as_hexlify(), hxb )
-        self.assertEqual( ch.as_base64().strip(), b64 )
+        self.assertEqual(ch.as_hexlify(), hxb)
+        self.assertEqual(ch.as_base64().strip(), b64)
 
 
 if __name__ == '__main__':

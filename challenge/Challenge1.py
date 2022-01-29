@@ -22,7 +22,7 @@ class Challenge1:
 
     def __str__(self):
         """debug str"""
-        s ={
+        s = {
             "bytes": self.raw,
             "base64": self.as_base64(),
             "hex": self.as_hexlify()
@@ -30,6 +30,5 @@ class Challenge1:
         return str(s)
 
     def __repr__(self):
-        """representative """
+        """representative str"""
         return f'Challenge1({self.as_hexlify()})'
-
