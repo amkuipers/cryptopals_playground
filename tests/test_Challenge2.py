@@ -6,6 +6,13 @@ class TestChallenge2(unittest.TestCase):
     def test_init(self):
         pass
 
+    def test_xor_method(self):
+        """xor with param"""
+        a = Challenge2(b'4040')
+        b = a.xor(b'0303')
+        c = b'4343'
+        self.assertEqual(b, c)
+
     def test_simple(self):
         """basic check"""
         a = Challenge2(b'4040')

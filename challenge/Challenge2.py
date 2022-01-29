@@ -29,3 +29,13 @@ class Challenge2(Challenge1):
         else:
             print("[-] Parameters do not have an equal length.")
             return b''
+
+    def xor(self, hxb: bytes = b''):
+        """XOR self with hxb"""
+        other = binascii.unhexlify(hxb)
+        rawres = b''
+        ln = len(other)
+        for i in range(0, len(self.raw)):
+            rawres += bytes([self.raw[i] ^ other[i % ln]])
+        #return Challenge2(binascii.hexlify(raw))
+        return binascii.hexlify(rawres)

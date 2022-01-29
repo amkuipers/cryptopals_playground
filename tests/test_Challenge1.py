@@ -26,5 +26,6 @@ class TestChallenge1(unittest.TestCase):
         ch = Challenge1(self.hxb)
         self.assertEqual(ch.__repr__(), f'Challenge1({self.hxb})')
 
+
 if __name__ == '__main__':
     unittest.main()
