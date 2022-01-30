@@ -28,11 +28,13 @@ class Challenge3(Challenge2):
         """int to a hexlified bytes string: 0 to b'00' """
         return binascii.hexlify(bytes([i]))
 
-    def is_text(self):
+    def is_text(self, notext=b'@~`$^<>#|"\\'):
         """ check if raw string is printable """
         for c in self.raw:
             if c == 0x0a or c == 0x0d:
                 continue
+            if c in notext:
+                return False
             if c < 0x20 or c >= 0x7f:
                 return False
         return True

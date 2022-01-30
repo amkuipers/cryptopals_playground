@@ -37,5 +37,4 @@ class Challenge2(Challenge1):
         ln = len(other)
         for i in range(0, len(self.raw)):
             rawres += bytes([self.raw[i] ^ other[i % ln]])
-        #return Challenge2(binascii.hexlify(raw))
         return binascii.hexlify(rawres)
