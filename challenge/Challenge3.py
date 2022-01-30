@@ -70,9 +70,9 @@ class Challenge3(Challenge2):
                 d = Challenge3(self.xor(h))
                 if d.is_text():  # notext filter default
                     # print(f"[+] cracked xor {hex(i)}^{hex(j)}={hex(i^j)}")
-                    return i^j  # return the int
+                    return i ^ j  # return the int
         return -1  # not found
 
-    def decode_xor(self, key:int):
+    def decode_xor(self, key: int):
         """decode xor, returning new object"""
         return Challenge3(self.xor(Challenge3.i2hexlified(key)))

@@ -106,11 +106,7 @@ class Challenge6(Challenge3):
             counts[key_len] = nd
         # print(f'[+] key size, normalized distance {counts}')
         keysizes = self._order(counts, [])
-        # print(f'[+] descending distance {distances}')
-        #kl = distances.pop()  # shortest distance
-        #print(f'[+] select key len {kl} that has norm distance {counts[kl]}')
-        #return keysizes.reverse()
-        return keysizes # pop() = last is the most probable key size
+        return keysizes  # pop() = last is the most probable key size
 
     @staticmethod
     def load_base64(filename='tests/6.txt'):
@@ -129,7 +125,6 @@ class Challenge6(Challenge3):
         kss = self.find_key_sizes()
         for i in range(0, try_keys):  # try for 3 most probable key sizes
             ks = kss.pop()      # last + remove from list
-            #print(f'[+] Crack file with key size {ks} attempted')
             arr = self.cut(ks)    # cut in parts of key size
             tra = self.transpose(arr)  # flip
             keys = ''
@@ -140,20 +135,19 @@ class Challenge6(Challenge3):
                 cha = Challenge6(binascii.hexlify(tra[j]))
                 cra = cha.crack()
                 if cra == -1:
-                    # print(f'[-] Stop, not found')
-                    stopped = True
+                    stopped = True  # not found
                     break
                 keys += chr(cra)
             if not stopped:
                 print(f'Cracked and found {keys}')
-                return keys
+                return keys  # key text
             else:
-                continue
-        return '' # no key
+                continue  # next key size
+        return ''  # no key
 
     def decode_key(self, key=''):
         """decode with string key"""
-        hxl = self.xor(binascii.hexlify(bytes(key,'ascii')))
+        hxl = self.xor(binascii.hexlify(bytes(key, 'ascii')))
         dec = binascii.unhexlify(hxl)
         print(f'Decoded to {dec}')
-        return dec
+        return dec  # decoded bytes

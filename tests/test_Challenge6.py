@@ -116,21 +116,6 @@ class TestChallenge6(unittest.TestCase):
         nd = ch.normalized_distance2(key_len=3)
         self.assertEqual(nd, 3/3)
 
-
-    def test_find_key_sizes_simple(self):
-        pt = b'This is the original text'
-        ke = b'code'
-        ct = b'Vvlw kg wlg cumiwqen hhbv'
-        ch = Challenge6(binascii.hexlify(ct))
-        #
-        ks = ch.find_key_sizes()
-        print(f'[+] Found key sizes simple {ks}')
-        # arr = ch.cut(ks)
-        # tra = ch.transpose(arr)
-        # ch0 = Challenge6(binascii.hexlify(tra[0]))
-        # cr0 = ch0.crack()
-        # print(cr0.raw)
-
     def test_find_key_size(self):
         ch = Challenge6.load_base64('tests/6.txt')
         ks = ch.find_key_sizes()
@@ -140,9 +125,12 @@ class TestChallenge6(unittest.TestCase):
         ch = Challenge6.load_base64('tests/6.txt')
         key = ch.crack_key()
         expected = 'Terminator X: Bring the noise'
-        self.assertEquals(key, expected)
+        self.assertEqual(key, expected)
         #
-        ch2 = ch.decode_key(key)
+        lines = ch.decode_key(key).decode('ascii')
+        # song text contains this word, longer than the key
+        self.assertTrue('Supercalafragilisticexpialidocious' in lines)
+        self.assertTrue('Sparkamatic' in lines)
 
     def test_load_base64(self):
         """test load file """
