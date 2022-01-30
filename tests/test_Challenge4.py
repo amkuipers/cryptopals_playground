@@ -16,9 +16,12 @@ class TestChallenge4(unittest.TestCase):
         file = open('tests/4.txt', 'r')
         for line in file:
             ch = Challenge3(bytes(line.strip(), 'ascii'))
-            cr = ch.crack()
-            if len(cr.raw) > 0:
-                res = cr.raw
+            key = ch.crack()
+            if key == -1:
+                continue
+            cr = ch.decode_xor(key)
+            res = cr.raw
+            break
         file.close()
         self.assertEqual(res, b'Now that the party is jumping\n')
 

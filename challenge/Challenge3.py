@@ -39,12 +39,8 @@ class Challenge3(Challenge2):
                 return False
         return True
 
-    def score(self, skips=[]):
-        """count the bytes score, except skips"""
-        counts = [0] * 256
-        for i in range(0, len(self.raw)):
-            b = self.raw[i]
-            counts[b] += 1
+    def _order(self, counts, skips=[]):
+        """descending used in score()"""
         highest = -1
         index = -1
         for i in range(0, len(counts)):
@@ -54,17 +50,29 @@ class Challenge3(Challenge2):
                 highest = counts[i]
                 index = i
         # recursive method call
-        return self.score(skips + [index]) if highest > 0 else skips
+        return self._order(counts, skips + [index]) if highest > 0 else skips
+
+    def score(self, skips=[]):
+        """count the bytes score, except skips"""
+        counts = [0] * 256
+        for i in range(0, len(self.raw)):
+            b = self.raw[i]
+            counts[b] += 1
+        return self._order(counts, skips)
 
     def crack(self):
         """crack single xor, based on english frequency, and printable text"""
-        freq = b'ETAOIN SHRDLU'
+        freq = b'ETAOIN SHRDLU' + b'etaoinshrdlu' + b'BCFGJKMPQVWXYZ' + b'bcfgjkmpqvwxyz'
         scores = self.score()
         for i in scores:
             for j in freq:
                 h = Challenge3.i2hexlified(i ^ j)
                 d = Challenge3(self.xor(h))
-                if d.is_text():
-                    print(f"[+] cracked xor {hex(i)}^{hex(j)}={hex(i^j)}")
-                    return d
-        return Challenge3(b'')
+                if d.is_text():  # notext filter default
+                    # print(f"[+] cracked xor {hex(i)}^{hex(j)}={hex(i^j)}")
+                    return i^j  # return the int
+        return -1  # not found
+
+    def decode_xor(self, key:int):
+        """decode xor, returning new object"""
+        return Challenge3(self.xor(Challenge3.i2hexlified(key)))

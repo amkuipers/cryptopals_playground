@@ -1,3 +1,4 @@
+import binascii
 import unittest
 
 from challenge.Challenge3 import Challenge3
@@ -33,8 +34,9 @@ class TestChallenge3(unittest.TestCase):
         """test challenge 3"""
         p1 = b'1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736'
         a = Challenge3(p1)
-        d = a.crack()
-        self.assertEqual(d.raw, b"Cooking MC's like a pound of bacon")
+        key = a.crack()
+        ch = a.decode_xor(key)
+        self.assertEqual(ch.raw, b"Cooking MC's like a pound of bacon")
 
     def test_score_two(self):
         """method score """
