@@ -7,34 +7,52 @@ class Challenge2(Challenge1):
     """
     Fixed XOR.
     Write a function that takes two equal-length buffers and produces their XOR combination.
-    If your function works properly, then when you feed it the string:
-    '1c0111001f010100061a024b53535009181c' ... after hex decoding, and when XOR against:
-    '686974207468652062756c6c277320657965' ... should produce:
-    '746865206b696420646f6e277420706c6179'
     """
 
     def __init__(self, hxb: bytes = b''):
         super().__init__(hxb)
 
     def __eq__(self, other):
+        """
+        Overload eq.
+
+        :param other: Challenge2 object
+        :return: True or False
+        """
         return repr(self) == repr(other)
 
     def __xor__(self, other):
-        """XOR self with the other!"""
-        if len(self.raw) == len(other.raw):
-            raw = b''
-            for i in range(0, len(self.raw)):
-                raw += bytes([self.raw[i] ^ other.raw[i]])
-            return Challenge2(binascii.hexlify(raw))
-        else:
+        """
+        Overload ^ xor operator.
+        Self ^ other into new object.
+        Both raw bytes must have the same length.
+
+        :param other: Challenge2 object
+        :return: new Challenge2 object with result of xor
+        """
+        if len(self.raw) != len(other.raw):
             print("[-] Parameters do not have an equal length.")
-            return b''
+            raise ValueError("Must have equal length")
+
+        raw = b''
+        for i in range(0, len(self.raw)):
+            raw += bytes([self.raw[i] ^ other.raw[i]])
+        return Challenge2(binascii.hexlify(raw))
 
     def xor(self, hxb: bytes = b''):
-        """XOR self with hxb"""
-        other = binascii.unhexlify(hxb)
-        rawres = b''
-        ln = len(other)
+        """
+        Xor self with hxb, returns hex bytes with result.
+        The hxb can be shorter, it will be repeated to
+        match the length of self.
+
+        :param hxb: hex bytes
+        :return: hex bytes with result of xor
+        """
+        other_raw = binascii.unhexlify(hxb)
+        result_raw = b''
+        ln = len(other_raw)
         for i in range(0, len(self.raw)):
-            rawres += bytes([self.raw[i] ^ other[i % ln]])
-        return binascii.hexlify(rawres)
+            result_raw += bytes([self.raw[i] ^ other_raw[i % ln]])
+        return binascii.hexlify(result_raw)
+
+# TODO: the __xor__ and xor have different implementations: refactor

@@ -6,7 +6,14 @@ from challenge.Challenge3 import Challenge3
 
 class Challenge6(Challenge3):
     """
-    breaking
+    Breaking Vigenere crypto that uses an unknown key.
+    Determines possible key length candidates.
+    Because the key repeats, the first char of the key is
+    used over and over again. So from the encrypted text
+    are all characters collected for that first char.
+    Then for this collection only 1 key char need to be found
+    so that the result has readable characters for all.
+    Then collect all found key chars into the key text.
     """
 
     def __init__(self, hxb: bytes = b''):
@@ -45,6 +52,7 @@ class Challenge6(Challenge3):
         else:
             print("[-] Length is not equal")
             return -1
+        # TODO refactor to raise, see Challenge2
 
     @staticmethod
     def transpose(arr):
@@ -60,33 +68,45 @@ class Challenge6(Challenge3):
             answer.append(s)
         return answer
 
-    def cut(self, key_len=3):
-        """cut raw into array with strings of s length"""
-        a = []
-        for i in range(0, len(self.raw), key_len):
-            p = self.raw[i:i + key_len]
-            a.append(p)
-        return a
+    def cut(self, cut_len=3):
+        """
+        From raw, return an array of strings of cut_len length.
+        Usage: pass key length to cut_len.
+
+        :param cut_len: int
+        :return: array of strings of cut_len length
+        """
+        result = []
+        for i in range(0, len(self.raw), cut_len):
+            part = self.raw[i:i + cut_len]
+            result.append(part)
+        return result
 
     def normalized_distance2(self, key_len):
+        """normalized distance for shorter strings"""
+        # raw is at least 2 keys long
         p1 = self.raw[0:key_len]
         p2 = self.raw[key_len:key_len * 2]
-        distance = Challenge6.distance(p1, p2)  # bytes
+        distance = self.distance(p1, p2)  # bytes
         normalized = distance / key_len
         return normalized
 
     def normalized_distance4(self, key_len):
+        """normalized distance for longer strings"""
+        # raw is at least 4 keys long
         p1 = self.raw[0:key_len]
         p2 = self.raw[key_len:key_len * 2]
         p3 = self.raw[key_len*2:key_len * 3]
         p4 = self.raw[key_len*3:key_len * 4]
+        # six permutations
         # 12 13 14 23 24 34
-        norm12 = Challenge6.distance(p1, p2) / key_len
-        norm13 = Challenge6.distance(p3, p4) / key_len
-        norm14 = Challenge6.distance(p3, p4) / key_len
-        norm23 = Challenge6.distance(p2, p3) / key_len
-        norm24 = Challenge6.distance(p3, p4) / key_len
-        norm34 = Challenge6.distance(p3, p4) / key_len
+        norm12 = self.distance(p1, p2) / key_len
+        norm13 = self.distance(p3, p4) / key_len
+        norm14 = self.distance(p3, p4) / key_len
+        norm23 = self.distance(p2, p3) / key_len
+        norm24 = self.distance(p3, p4) / key_len
+        norm34 = self.distance(p3, p4) / key_len
+        # average distance of the six permutations
         normalized = (norm12 + norm13 + norm14 + norm23 + norm24 + norm34) / 6
         return normalized
 
@@ -108,28 +128,41 @@ class Challenge6(Challenge3):
         keysizes = self._order(counts, [])
         return keysizes  # pop() = last is the most probable key size
 
+    # TODO is @classmethod better as factory method?
     @staticmethod
     def load_base64(filename='tests/6.txt'):
-        """load file """
+        """
+        Load file with base64 content.
+        Accepts multi-line base64 content.
+
+        :param filename: file name to load
+        :return: instance with content
+        """
         b64 = ''
         file = open(filename, 'r')
         for line in file:
-            b64 += line.strip()  # remove newline
+            b64 += line.strip()
         file.close()
         # return new object
         raw = base64.b64decode(b64)
         return Challenge6(binascii.hexlify(raw))
 
     def crack_key(self, try_keys=3):
-        """crack multi character key"""
+        """
+        Crack multi character key.
+        Vigenere based crypto.
+
+        :param try_keys: optional nr of key sizes to try
+        :return: plain text key
+        """
         kss = self.find_key_sizes()
-        for i in range(0, try_keys):  # try for 3 most probable key sizes
-            ks = kss.pop()      # last + remove from list
-            arr = self.cut(ks)    # cut in parts of key size
+        for i in range(0, try_keys):   # try for 3 most probable key sizes
+            ks = kss.pop()             # last + remove from list
+            arr = self.cut(ks)         # cut in parts of key size
             tra = self.transpose(arr)  # flip
             keys = ''
             stopped = False
-            # per transposed block
+            # per transposed block, simple 1 char xor crack
             for j in range(0, ks):
                 # print(f'[+] Cracking block {j}')
                 cha = Challenge6(binascii.hexlify(tra[j]))
@@ -137,17 +170,23 @@ class Challenge6(Challenge3):
                 if cra == -1:
                     stopped = True  # not found
                     break
-                keys += chr(cra)
+                keys += chr(cra)  # found for block
             if not stopped:
                 print(f'Cracked and found {keys}')
                 return keys  # key text
             else:
-                continue  # next key size
-        return ''  # no key
+                continue  # try next key size
+        return ''  # no key found
 
-    def decode_key(self, key=''):
-        """decode with string key"""
+    def decode_key(self, key: str = '') -> bytes:
+        """
+        Decode raw with known plain string key.
+        So key is not bytes nor hexlify yet.
+
+        :param key: str with key
+        :return: decoded in raw bytes
+        """
         hxl = self.xor(binascii.hexlify(bytes(key, 'ascii')))
         dec = binascii.unhexlify(hxl)
         print(f'Decoded to {dec}')
-        return dec  # decoded bytes
+        return dec  # decoded bytes, no hexlify
