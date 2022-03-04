@@ -1,15 +1,18 @@
-# py
+# cryptopals playground
 
-Python + GitHub Action
+Python + GitHub Action to automatically build code on a commit.
+
+Learning Python while building solutions for the cryptopals challenges.
 
 ## unittest
 
     python3 -m unittest -v
 
-## GitHub Action
+## github action
 
 https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs-or-python?langId=py
 
-## Challenges
+## challenges
 
 https://cryptopals.com/sets/1
+
